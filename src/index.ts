@@ -1,25 +1,38 @@
-import { interval, range, reduce, take, tap } from "rxjs";
+import { catchError, pluck } from 'rxjs/operators';
+import { map, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
 
 
-const numbers$ = [1, 2, 3, 4, 5];
 
-const totalReducer = (acumulador: number, valorActual: number) => {
-    return acumulador + valorActual;
+const url = 'https://api.github.com/userXs?per_page=5';
+
+const manejaError = (resp: Response) => {
+    if (!resp.ok) {
+        throw new Error(resp.statusText);
+    }
+    return resp
 }
 
-const total = numbers$.reduce(totalReducer);
-console.log('total arr', total);
+const fetchPromesa = fetch(url);
+
+// fetchPromesa
+// .then(resp => resp.json())
+// .then(data => console.log('data: ', data))
+// .catch(err => console.warn('error en usuario',err))
 
 
-interval(1000).pipe(
-    take(3),
-    tap(console.log ),
-    reduce(totalReducer,4)
-).subscribe({
-    next: n => console.log('next: ', n),
-    complete: () => console.log('Complete'),
-})
 
+// fetchPromesa
+//     .then(manejaError)
+//     .then(resp => resp.json())
+//     .then(data => console.log('data: ', data))
+//     .catch(err => console.warn('error en usuario', err))
 
-// reduce : realiz la suma del valor acumulado más el valor actual.
-// el conteo inica desde de el 0
+ajax(url).pipe(
+    // map(m => m.response)
+    pluck('response'),
+    catchError(err =>{
+        console.warn('Error en: ', err);
+        return of([]);
+    })
+).subscribe(users => console.log('Usuarios:', users))

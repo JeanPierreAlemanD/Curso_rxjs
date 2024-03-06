@@ -1,5 +1,5 @@
 import { fromEvent, pipe, range } from 'rxjs';
-import { map, pluck } from 'rxjs/operators';
+import { distinctUntilChanged, map, pluck } from 'rxjs/operators';
 
 
 // range(1, 5).pipe(
@@ -16,7 +16,8 @@ const keyupCode$= keyup$.pipe(
 const keyupPluck$ = keyup$.pipe(
     // pluck('key')
     // pluck('keyCode')
-    pluck('target','baseURI')
+    pluck('target','baseURI'),
+    distinctUntilChanged()
 );
 
 
