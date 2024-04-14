@@ -1,15 +1,12 @@
-import { of, take, tap } from "rxjs";
+import {concatMap, fromEvent, interval, switchMap, take} from "rxjs";
 
 
-const numeros$ = of(1,2,3,4,5).pipe(
-    tap( t =>console.log('tap 1:', t)),
-)
+const interval$ = interval(500).pipe(
+    take(3));
+
+const click$ = fromEvent(document,'click');
 
 
-numeros$.pipe(
-    tap( t =>console.log('tap:', t)),
-    take(3)
-).subscribe({
-    next: val => console.log('next: ', val),
-    complete: ( )=> console.log('complete')    
-})
+click$.pipe(
+    concatMap(() => interval$)
+).subscribe(console.log)
